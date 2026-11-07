@@ -16,30 +16,45 @@
 
 int main()
 {
-    /*
-     a = 1 
-     b = 2
-     c = a + b = 1 + 2 = 3
-     */
+    int a = 1;
+    int b = 2;
+    ing c = 0;
 
-    // тип_переменной тип_переменной;
-    int a;
-    a = 1;
-
-    int b;
-    b = 2;
-
-    int c;
     c = a + b;
-
-    // 1 + 2 = 3
-
-    std::cout << a;
-    std::cout << " + ";
-    std::cout << b;
-    std::cout << " = ";
-    std::cout << c;
-    std::cout << '\n';
     std::cout << a << " + " << b << " = " << c << '\n';
 
+    c = a - b;
+    std::cout << a << " - " << b << " = " << c << '\n';
+
+    c = a * b;
+    std::cout << a << " * " << b << " = " << c << '\n';
+
+    if (b != 0)
+    {
+        c = a / b;
+        std::cout << a << " / " << b << " = " << c << '\n';
+    }
+    else 
+    {
+        std::cout << "Error! Division by zero is not allowed";
+    }
+
+    c = 1;
+    for (int i = 0; i < b; ++i) // i = i + 1; i++;
+    {
+        c = c * a;
+    }
+    std::cout << a << " ^ " << b << " = " << c << '\n';
+    /*
+     i = 0
+     i < b; 0 < 2
+     c = 1 * 2 = 2
+     ++i; i = 1;
+
+     i < b; 1 < 2
+     c = 2 * 2 = 4
+     ++i; i = 2
+
+     i < b; 2 < 2
+     */
 }
