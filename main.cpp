@@ -1,60 +1,74 @@
 /*
-написать консольную утилиту-калькулятор,
-которая получает два целых числа и операции,
-которую над ними нужно выполнить.
- 
-Доступрные операции: сложения, вычитания, умножения, деление и возведение в степень.
- 
-Для операции деления необходимо выполнить проверку деления на 0.
-
-Рузультат выполнения операции вывести в консоль.
+Имя нашей функции: addition
+Аргумент функции: a (имеет тип int) и b (имеет тип int)
+Функция вохвращает с (имеет тип int) - результат сложения двух чисел 
+тип_возврата имя_функции(аргумент_функции)
+{
+    тело функции
+}
 */
-
-// Yo
-
 #include <iostream>
 
-int main()
+int addition(int a, int b)
 {
-    int a = 1;
-    int b = 2;
-    ing c = 0;
+    return a + b;
+}
 
-    c = a + b;
-    std::cout << a << " + " << b << " = " << c << '\n';
+int substraction(int a, int b)
+{
+    return a - b;
+}
 
-    c = a - b;
-    std::cout << a << " - " << b << " = " << c << '\n';
+int multiplication(int a, int b)
+{
+    return a * b;
+}
 
-    c = a * b;
-    std::cout << a << " * " << b << " = " << c << '\n';
-
-    if (b != 0)
+int division(int a, int b, int& c)
+{
+    if (b == 0)
     {
-        c = a / b;
-        std::cout << a << " / " << b << " = " << c << '\n';
+        return -1;
     }
-    else 
-    {
-        std::cout << "Error! Division by zero is not allowed";
-    }
+    c = a / b;
+    return 0;
 
-    c = 1;
-    for (int i = 0; i < b; ++i) // i = i + 1; i++;
+    return c = a / b;
+}
+
+int power(int a, int b)
+{
+    int c = 1;
+    for (int i = 0; i < b; ++i)
     {
         c = c * a;
     }
-    std::cout << a << " ^ " << b << " = " << c << '\n';
-    /*
-     i = 0
-     i < b; 0 < 2
-     c = 1 * 2 = 2
-     ++i; i = 1;
+    return c;
+}
 
-     i < b; 1 < 2
-     c = 2 * 2 = 4
-     ++i; i = 2
+void printResult(int a, int b, int c, char operation)
+{
+    std::cout << a << ' ' << operation << ' ' << b << " = " << c << '\n';
+}
 
-     i < b; 2 < 2
-     */
+int main()
+{
+    int a = 4;
+    int b = 2;
+    int c = 0;
+    int status = 0;
+
+    status = division(a, b, c);
+    if (status == 0)
+    {
+        printResult(a, b, c, '/');
+    }
+    else if(status == -1)
+    {
+        std::cout << "Error! Division by zero is not allowed";
+    }
+    else
+    {
+        std::cout << "Unknown error at division operation";
+    }
 }
