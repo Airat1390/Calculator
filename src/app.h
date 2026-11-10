@@ -2,6 +2,5 @@
 
 namespace app
 {
-    void applicationRun(int argc, char** argv);
+int applicationRun(int argc, char** argv);
 }
-
