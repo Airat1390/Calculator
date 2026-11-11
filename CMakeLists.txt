@@ -6,7 +6,7 @@ include(FetchContent)
 FetchContent_Declare(
     libmath
     GIT_REPOSITORY https://github.com/Airat1390/libmath.git    
-    GIT_TAG v1.0.0
+    GIT_TAG v1.1.0
 )
 FetchContent_MakeAvailable(libmath)
 

@@ -1,18 +1,18 @@
 #include "app.h"
-#include <libmath.h>
 
-#include <cerrno>
-#include <climits>
-#include <cstdint>
-#include <cstdio>
-#include <cstdlib>
+#include <errno.h> // NOLINT
+#include <getopt.h>
+#include <libmath.h>
+#include <limits.h> // NOLINT
+#include <stdint.h> // NOLINT
+#include <stdio.h>  // NOLINT
+#include <stdlib.h> // NOLINT
 #include <unistd.h>
 
 namespace
 {
 
 constexpr int kBaseTen = 10;
-constexpr int kErrorOverflow = -5;
 
 struct Task
 {
@@ -25,13 +25,20 @@ struct Task
 
 void printHelp()
 {
-    std::printf("Калькулятор. Доступные опции:\n"); // NOLINT
-    std::printf("  -a <число> : Первое число\n"); // NOLINT
-    std::printf("  -b <число> : Второе число (игнорируется для !)\n"); // NOLINT
-    std::printf("  -o <знак>  : Операция (+, -, *, /, ^, !)\n"); // NOLINT
-    std::printf("  -h         : Показать эту справку\n\n"); // NOLINT
-    std::printf("Пример запуска:\n"); // NOLINT
-    std::printf("  calculator -a 5 -b 2 -o +\n"); // NOLINT
+    // NOLINTNEXTLINE
+    printf("Калькулятор. Доступные опции:\n");
+    // NOLINTNEXTLINE
+    printf("  -a <число>   : Первое число\n");
+    // NOLINTNEXTLINE
+    printf("  -b <число>   : Второе число (игнорируется для !)\n");
+    // NOLINTNEXTLINE
+    printf("  -o <знак>    : Операция (+, -, *, /, ^, !)\n");
+    // NOLINTNEXTLINE
+    printf("  -h, --help   : Показать эту справку\n\n");
+    // NOLINTNEXTLINE
+    printf("Пример запуска:\n");
+    // NOLINTNEXTLINE
+    printf("  calculator -a 5 -b 2 -o +\n");
 }
 
 bool safeParseInt(const char* str, int& outValue)
@@ -43,9 +50,10 @@ bool safeParseInt(const char* str, int& outValue)
 
     char* endptr = nullptr;
     errno = 0;
-    const int64_t val = std::strtol(str, &endptr, kBaseTen);
+    const int64_t val = strtol(str, &endptr, kBaseTen);
 
-    if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN)) || (errno != 0 && val == 0))
+    if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN)) ||
+        (errno != 0 && val == 0))
     {
         return false;
     }
@@ -68,7 +76,8 @@ bool validateOptions(bool hasA, bool hasB, char operation)
     {
         if (!hasA)
         {
-            std::fprintf(stderr, "Error: Unary operation '!' requires operand -a\n"); // NOLINT
+            // NOLINTNEXTLINE
+            fprintf(stderr, "Error: Unary operation '!' requires operand -a\n");
             return false;
         }
     }
@@ -76,7 +85,10 @@ bool validateOptions(bool hasA, bool hasB, char operation)
     {
         if (!hasA || !hasB)
         {
-            std::fprintf(stderr, "Error: Operation '%c' requires both operands: -a and -b\n", operation); // NOLINT
+            // NOLINTNEXTLINE
+            fprintf(stderr,
+                    "Error: Operation '%c' requires both operands: -a and -b\n",
+                    operation);
             return false;
         }
     }
@@ -89,24 +101,34 @@ int makeTask(int argc, char** argv, Task& task)
     task.value2 = 0;
     task.operation = '\0';
     task.result = 0;
-    task.status = 0;
+    task.status = libmath::kSuccess;
 
     bool hasA = false;
     bool hasB = false;
     bool hasO = false;
 
+    // NOLINTNEXTLINE
+    const option longOptions[] = {{"help", no_argument, nullptr, 'h'},
+                                  {nullptr, 0, nullptr, 0}};
+
     int opt = 0;
     optind = 1;
-    opterr = 0; 
+    opterr = 0;
 
-    while ((opt = getopt(argc, argv, "a:b:o:h")) != -1) // NOLINT
+    // NOLINTNEXTLINE
+    while ((opt = getopt_long(argc, argv, "a:b:o:h", longOptions, nullptr)) !=
+           -1)
     {
         switch (opt)
         {
             case 'a':
                 if (!safeParseInt(optarg, task.value1))
                 {
-                    std::fprintf(stderr, "Error: Invalid or out-of-range value for -a: '%s'\n", optarg); // NOLINT
+                    // NOLINTNEXTLINE
+                    fprintf(
+                        stderr,
+                        "Error: Invalid or out-of-range value for -a: '%s'\n",
+                        optarg);
                     return 1;
                 }
                 hasA = true;
@@ -114,18 +136,28 @@ int makeTask(int argc, char** argv, Task& task)
             case 'b':
                 if (!safeParseInt(optarg, task.value2))
                 {
-                    std::fprintf(stderr, "Error: Invalid or out-of-range value for -b: '%s'\n", optarg); // NOLINT
+                    // NOLINTNEXTLINE
+                    fprintf(
+                        stderr,
+                        "Error: Invalid or out-of-range value for -b: '%s'\n",
+                        optarg);
                     return 1;
                 }
                 hasB = true;
                 break;
             case 'o':
-                if (optarg[0] == '\0' || optarg[1] != '\0') // NOLINT
+                // NOLINTNEXTLINE
+                if (optarg[0] == '\0' || optarg[1] != '\0')
                 {
-                    std::fprintf(stderr, "Error: Operator -o must be a single character: '%s'\n", optarg); // NOLINT
+                    // NOLINTNEXTLINE
+                    fprintf(
+                        stderr,
+                        "Error: Operator -o must be a single character: '%s'\n",
+                        optarg);
                     return 1;
                 }
-                task.operation = optarg[0]; // NOLINT
+                // NOLINTNEXTLINE
+                task.operation = optarg[0];
                 hasO = true;
                 break;
             case 'h':
@@ -134,11 +166,14 @@ int makeTask(int argc, char** argv, Task& task)
             case '?':
                 if (optopt == 'a' || optopt == 'b' || optopt == 'o')
                 {
-                    std::fprintf(stderr, "Error: Option -%c requires an argument.\n", optopt); // NOLINT
+                    // NOLINTNEXTLINE
+                    fprintf(stderr, "Error: Option -%c requires an argument.\n",
+                            optopt);
                 }
                 else
                 {
-                    std::fprintf(stderr, "Error: Unknown option -%c.\n", optopt); // NOLINT
+                    // NOLINTNEXTLINE
+                    fprintf(stderr, "Error: Unknown option.\n");
                 }
                 return 1;
             default:
@@ -148,7 +183,8 @@ int makeTask(int argc, char** argv, Task& task)
 
     if (!hasO)
     {
-        std::fprintf(stderr, "Error: Missing required option: -o\n"); // NOLINT
+        // NOLINTNEXTLINE
+        fprintf(stderr, "Error: Missing required option: -o\n");
         return 1;
     }
 
@@ -157,7 +193,7 @@ int makeTask(int argc, char** argv, Task& task)
         return 1;
     }
 
-    return -1; 
+    return -1;
 }
 
 void makeCalculate(Task& task)
@@ -165,16 +201,20 @@ void makeCalculate(Task& task)
     switch (task.operation)
     {
         case '+':
-            task.status = libmath::addition(task.value1, task.value2, task.result);
+            task.status =
+                libmath::addition(task.value1, task.value2, task.result);
             break;
         case '-':
-            task.status = libmath::subtraction(task.value1, task.value2, task.result);
+            task.status =
+                libmath::subtraction(task.value1, task.value2, task.result);
             break;
         case '*':
-            task.status = libmath::multiplication(task.value1, task.value2, task.result);
+            task.status =
+                libmath::multiplication(task.value1, task.value2, task.result);
             break;
         case '/':
-            task.status = libmath::division(task.value1, task.value2, task.result);
+            task.status =
+                libmath::division(task.value1, task.value2, task.result);
             break;
         case '^':
             task.status = libmath::power(task.value1, task.value2, task.result);
@@ -190,41 +230,49 @@ void makeCalculate(Task& task)
 
 int printResult(const Task& task)
 {
-    if (task.status == 0)
+    if (task.status == libmath::kSuccess)
     {
         if (task.operation == '!')
         {
-            std::printf("%d! = %d\n", task.value1, task.result); // NOLINT
+            // NOLINTNEXTLINE
+            printf("%d! = %d\n", task.value1, task.result);
         }
         else
         {
-            std::printf("%d %c %d = %d\n", task.value1, task.operation, task.value2, task.result); // NOLINT
+            // NOLINTNEXTLINE
+            printf("%d %c %d = %d\n", task.value1, task.operation, task.value2,
+                   task.result);
         }
-        return 0; 
+        return 0;
     }
 
-    if (task.status == -1)
+    if (task.status == libmath::kDivisionByZero)
     {
-        std::fprintf(stderr, "Error: Division by zero!\n"); // NOLINT
+        // NOLINTNEXTLINE
+        fprintf(stderr, "Error: Division by zero!\n");
     }
-    else if (task.status == -2)
+    else if (task.status == libmath::kNegativeDegree)
     {
-        std::fprintf(stderr, "Error: Degree must be non-negative!\n"); // NOLINT
+        // NOLINTNEXTLINE
+        fprintf(stderr, "Error: Degree must be non-negative!\n");
     }
-    else if (task.status == -3)
+    else if (task.status == libmath::kNegativeFactorial)
     {
-        std::fprintf(stderr, "Error: Factorial number must be non-negative!\n"); // NOLINT
+        // NOLINTNEXTLINE
+        fprintf(stderr, "Error: Factorial number must be non-negative!\n");
     }
-    else if (task.status == kErrorOverflow)
+    else if (task.status == libmath::kOverflow)
     {
-        std::fprintf(stderr, "Error: Integer overflow occurred!\n"); // NOLINT
+        // NOLINTNEXTLINE
+        fprintf(stderr, "Error: Integer overflow occurred!\n");
     }
     else
     {
-        std::fprintf(stderr, "Error: Unknown math or operation error!\n"); // NOLINT
+        // NOLINTNEXTLINE
+        fprintf(stderr, "Error: Unknown math or operation error!\n");
     }
 
-    return 1; 
+    return 1;
 }
 
 } // namespace
@@ -236,7 +284,7 @@ int applicationRun(int argc, char** argv)
 {
     Task task{};
     const int parseStatus = makeTask(argc, argv, task);
-    
+
     if (parseStatus >= 0)
     {
         return parseStatus;
@@ -247,4 +295,3 @@ int applicationRun(int argc, char** argv)
 }
 
 } // namespace app
-
